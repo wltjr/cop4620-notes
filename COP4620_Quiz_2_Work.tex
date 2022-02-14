@@ -1,0 +1,268 @@
+\documentclass{article}
+    \title{\vspace{-50pt}\textbf{\underline{COP4620 Quiz 2 Work}}}
+    \author{}
+    \date{}
+    \usepackage[tmargin=1in,lmargin=1in,rmargin=1in,bmargin=1in]{geometry}
+    \usepackage[T1]{fontenc}
+	\usepackage{titlesec}
+    \usepackage{makecell}
+    \usepackage{multicol}
+    \usepackage{longtable}
+    \usepackage{soul}
+    
+    \renewcommand{\familydefault}{\sfdefault}        	 
+    \renewcommand\theadfont{\bfseries\sffamily}
+	\titleformat{\section}
+	{\normalfont\bfseries}
+	{\thesection.}{0.5em}{}
+	\titleformat{\subsection}
+	{\normalfont\bfseries}
+	{\thesection.}{0.5em}{}
+\begin{document}
+
+\maketitle
+\vspace{-60pt}
+
+\section*{Question 2}
+\vspace{-1em}
+  \begin{enumerate}
+    \setlength\itemsep{-.25em}
+    \renewcommand{\labelenumii}{\arabic{enumii}.}
+    \item E $\rightarrow$ Prefix (E)
+    \item E $\rightarrow$ V Tail
+    \item Prefix $\rightarrow$ F
+    \item Prefix $\rightarrow$ $\lambda$
+    \item Tail $\rightarrow$ + E
+    \item Tail $\rightarrow$ $\lambda$
+  \end{enumerate}
+\vspace{-1em}
+\setlength{\leftskip}{1em}
+\noindent\{(), V, F, +, $\lambda$\} = \textbf{5 terminals} \{E, Prefix, Tail\} = \textbf{3 non-terminals} and \textbf{6 productions}
+
+\noindent\textbf{LMD}\newline
+E $\rightarrow$ Prefix (E) $\rightarrow$ F(E) $\rightarrow$ F(V Tail) $\rightarrow$ F(V + E)
+$\rightarrow$ F(V + V Tail) $\rightarrow$ F(V + V + E)\newline
+\indent\hspace{-.2cm}$\rightarrow$ F(V + V + V Tail) $\rightarrow$ F(V + V + V $\lambda$)
+$\rightarrow$ \textbf{F(V + V + V)}
+
+\noindent\textbf{RMD}\newline
+E $\rightarrow$ Prefix (E) $\rightarrow$ Prefix(V Tail) $\rightarrow$ Prefix(V + E)
+$\rightarrow$ Prefix(V + V Tail) $\rightarrow$ Prefix(V + V + E)\newline
+\indent\hspace{-.2cm}$\rightarrow$ Prefix(V + V + V Tail) $\rightarrow$ Prefix(V + V + V $\lambda$)
+$\rightarrow$ Prefix(V + V + V $\lambda$)\newline
+\indent\hspace{-.2cm}$\rightarrow$ Prefix(V + V + V) $\rightarrow$ \textbf{F(V + V + V)}
+\vspace{-1em}
+\subsection*{F(V + V +)}
+\vspace{-.5em}
+\noindent\textbf{LMD}\newline
+E $\rightarrow$ Prefix (E) $\rightarrow$ F(E) $\rightarrow$ F(V Tail) $\rightarrow$ F(V + E)
+$\rightarrow$ F(V + V Tail) $\rightarrow$ F(V + V + E) \textbf{$\leftarrow$ error}\newline
+Cannot replace E with $\lambda$\newline
+
+\noindent\textbf{RMD}\newline
+E $\rightarrow$ Prefix (E) $\rightarrow$ Prefix(V Tail) $\rightarrow$ Prefix(V + E)
+$\rightarrow$ Prefix(V + V Tail) $\rightarrow$ Prefix(V + V + E) \textbf{$\leftarrow$ error}\newline
+Cannot replace E with $\lambda$
+
+\section*{Question 3 - First set of A}
+\vspace{-2em}
+\begin{multicols}{2}
+  \begin{enumerate}
+    \setlength\itemsep{-.25em}
+    \item S $\rightarrow$ AB\$
+    \item A $\rightarrow$ xaA
+    \item A $\rightarrow$ yaA
+    \item A $\rightarrow$ $\lambda$
+    \item B $\rightarrow$ b
+    \item B $\rightarrow$ A
+  \end{enumerate}
+\setlength{\leftskip}{-12em}
+First (A) = First(xaA) $\cup$  First(yaA) $\cup$  First($\lambda$)\newline
+\indent\hspace{.25cm}First (xaA) = First of \{x\} - $\lambda$ = \{x\} - $\lambda$ = \{x\}\newline
+\indent\hspace{.25cm}First (yaA) = First of \{y\} - $\lambda$ = \{x\} - $\lambda$ = \{y\}\newline
+\indent\hspace{.25cm}First ($\lambda$) = First of {$\lambda$} - $\lambda$ = \{$\lambda$\}\newline
+First (A) = First(x) $\cup$  First(y) $\cup$  First($\lambda$)\newline
+First (A) = \{x\} $\cup$  \{y\} $\cup$  \{$\lambda$\} = \textbf{\{x, y, $\lambda$\} $\leftarrow$ Final set of A}
+\end{multicols}
+
+\section*{Question 4 - First set of B}
+\vspace{-1.5em}
+\begin{multicols}{2}
+  \begin{enumerate}
+    \setlength\itemsep{-.25em}
+    \item S $\rightarrow$ AB\$
+    \item A $\rightarrow$ xaA
+    \item A $\rightarrow$ yaA
+    \item A $\rightarrow$ $\lambda$
+    \item B $\rightarrow$ b
+    \item B $\rightarrow$ A
+  \end{enumerate}
+\setlength{\leftskip}{-12em}
+First (B) = First(b) $\cup$  First(A) = \textbf{\{b, x, y, $\lambda$\}  $\leftarrow$ Final set of B}\newline
+\newline\newline\newline\newline
+\end{multicols}
+
+\section*{Question 5 - First set of S}
+\vspace{-1.5em}
+\begin{multicols}{2}
+  \begin{enumerate}
+    \setlength\itemsep{-.25em}
+    \item S $\rightarrow$ AB\$
+    \item A $\rightarrow$ xaA
+    \item A $\rightarrow$ yaA
+    \item A $\rightarrow$ $\lambda$
+    \item B $\rightarrow$ b
+    \item B $\rightarrow$ A
+  \end{enumerate}
+\setlength{\leftskip}{-12em}
+First (S) = First(AB\$) = (First(A) - $\lambda$) $\cup$ (First(B) - $\lambda$) $\cup$ (First(\$) - $\lambda$)\newline
+\indent\hspace{.75cm} = \textbf{\{x, y, b, \$\} $\leftarrow$ Final set of S}
+\newline\newline\newline
+\end{multicols}
+
+\newpage
+\section*{Question 6 - Follow set of B}
+\vspace{-1.5em}
+\begin{multicols}{2}
+  \begin{enumerate}
+    \setlength\itemsep{-.25em}
+    \item S $\rightarrow$ AB\$
+    \item A $\rightarrow$ xaA
+    \item A $\rightarrow$ yaA
+    \item A $\rightarrow$ $\lambda$
+    \item B $\rightarrow$ b
+    \item B $\rightarrow$ A
+  \end{enumerate}
+\setlength{\leftskip}{-12em}
+Follow (B) = First(\$) = \textbf{\{\$\}  $\leftarrow$ Final set of B}
+\newline\newline\newline\newline
+\end{multicols}
+
+\section*{Question 7 - Follow set of A}
+\vspace{-1.5em}
+\begin{multicols}{2}
+  \begin{enumerate}
+    \setlength\itemsep{-.25em}
+    \item S $\rightarrow$ AB\$
+    \item A $\rightarrow$ xaA
+    \item A $\rightarrow$ yaA
+    \item A $\rightarrow$ $\lambda$
+    \item B $\rightarrow$ b
+    \item B $\rightarrow$ A
+  \end{enumerate}
+\setlength{\leftskip}{-12em}
+Follow (A) = First(B\$) $\cup$ Follow(A) $\cup$ Follow (A)\newline
+First (B) = First(b) $\cup$  First(A) = \{b, x, y, $\lambda$\}  $\leftarrow$ \textbf{Final set of B}\newline
+\indent\hspace{.25cm}(First(B) - $\lambda$) = \{b, x, y\}\newline
+\indent\hspace{.25cm}First(B\$) = First(B) $\cup$ First(\$) =\{b, x, y, \$\}\newline
+Follow (A) = \{b, x, y, \$\} = \textbf{\{b, x, y, \$\} $\leftarrow$ Final set of A}\newline
+\newline
+\end{multicols}
+
+
+\section*{Questions 8 - 10}
+\vspace{-1.5em}
+\begin{multicols}{2}
+  \begin{enumerate}
+    \setlength\itemsep{-.25em}
+    \item S $\rightarrow$ AB\$
+    \item A $\rightarrow$ xaA
+    \item A $\rightarrow$ yaA
+    \item A $\rightarrow$ $\lambda$
+    \item B $\rightarrow$ b
+    \item B $\rightarrow$ A\newline\newline\newline\newline\newline\newline\newline\newline
+  \end{enumerate}
+  
+\setlength{\leftskip}{-12em}
+\hspace{-.5cm}Predict(1 S $\rightarrow$ AB\$) = \textbf{\{x, y, b, \$\} $\leftarrow$ Predict 1}\newline
+\indent\hspace{.25cm}First (B) = First(b) = \{b\} $\leftarrow$ \textbf{Final set of B}\newline
+\indent\hspace{.25cm}First (A) = First(xaA) $\cup$  First(yaA) $\cup$  First($\lambda$) (from slide 19)\newline
+\indent\hspace{1cm}First (xaA) = First of \{x\} - $\lambda$ = \{x\} - $\lambda$ = \{x\}\newline
+\indent\hspace{1cm}First (yaA) = First of \{y\} - $\lambda$ = \{x\} - $\lambda$ = \{y\}\newline
+\indent\hspace{1cm}First ($\lambda$) = First of \{$\lambda$\} - $\lambda$ = \{$\lambda$\}\newline
+\indent\hspace{1cm}First (A) = First(x) $\cup$  First(y) $\cup$  First($\lambda$)\newline
+\indent\hspace{1cm}First (A) = \{x\} $\cup$ \{y\} $\cup$  \{$\lambda$\} = \{x, y, $\lambda$\} $\leftarrow$ \textbf{Final set of A}\newline
+\indent\hspace{.25cm}First(AB\$) = (First(A) - $\lambda$) $\cup$ First(B) = \{x, y, b\}$\leftarrow$ \textbf{Final set of AB\$} \newline
+Predict(2 A $\rightarrow$ xaA) = \{x\}\newline
+Predict(3 A $\rightarrow$ yaA) = \{y\}\newline
+Predict(4 A $\rightarrow$ $\lambda$) = (First($\lambda$) - $\lambda$) $\cup$ Follow(A)\newline
+\indent\hspace{2.3cm}= \textbf{\{b, x, y, \$\} $\leftarrow$ Predict 4}\newline
+Predict(5 B $\rightarrow$ b) = \{b\}\newline
+Predict(6 B $\rightarrow$ A) = (First(A) - $\lambda$) $\cup$ Follow(B)\ = \textbf{\{x, y, \$\} $\leftarrow$ Predict 6}
+\end{multicols}
+\section*{Question 8 - Predict(1)}
+\vspace{-1em}
+\hspace{-.3cm}Predict(1 S $\rightarrow$ AB\$) = \textbf{\{x, y, b, \$\} $\leftarrow$ Predict 1}
+
+\section*{Question 9 - Predict(4)}
+\vspace{-1em}
+\hspace{-.3cm}Predict(4 A $\rightarrow$ $\lambda$) = (First($\lambda$) - $\lambda$) $\cup$ Follow(A)\ = \textbf{\{b, x, y, \$\} $\leftarrow$ Predict 4}
+
+\section*{Question 10 - Predict(6)}
+\vspace{-1em}
+\hspace{-.3cm}Predict(6 B $\rightarrow$ A) = (First(A) - $\lambda$) $\cup$ Follow(B)\ = \textbf{\{x, y, \$\} $\leftarrow$ Predict 6}
+
+\section*{Question 11 - Parse Table LL(1)}
+  \begin{tabular}{|c|c|c|c|c|c|}
+    \hline
+	 & \thead{a} & \thead{b} & \thead{x} & \thead{y} & \thead{\$}\\
+    \hline
+	\textbf{S} &  & 1 & 1 & 1 & 1\\
+    \hline
+	\textbf{A} &  & 4 & 2,4 & 3,4 & 4\\
+    \hline
+	\textbf{B} &  & 5 & 6  & 6 & 6 \\
+    \hline
+\end{tabular}
+
+\newpage
+\section*{Question 12 - Parse Table LL(1)}
+\vspace{-1.5em}
+\begin{multicols}{2}
+  \begin{enumerate}
+    \setlength\itemsep{-.25em}
+    \item S $\rightarrow$ AB\$
+    \item A $\rightarrow$ xaA
+    \item A $\rightarrow$ yaA
+    \item A $\rightarrow$ $\lambda$
+    \item B $\rightarrow$ b
+  \end{enumerate}
+  Parse table LL(1)\newline
+  \begin{tabular}{|c|c|c|c|c|c|}
+    \hline
+	  & \thead{a} & \thead{b} & \thead{x} & \thead{y} & \thead{\$}\\
+    \hline
+	\textbf{S} &  & 1 & 1 & 1 & \\
+    \hline
+	\textbf{A} &  & 4 & 2 & 3 & \\
+    \hline
+	\textbf{B} &  & 5 &   &   & \\
+    \hline
+\end{tabular}
+\end{multicols}
+
+Stack-based parser for LL(1) \textbf{yaxa\$}\newline
+\begin{tabular}{|c|c|c|}
+\hline
+	\thead{Parse stack} & \thead{Remaining Input} & \thead{Parser action}\\
+\hline
+	S      & yaxa\$ & predict 1\\
+\hline
+	AB\$   & yaxa\$ & predict 3\\
+\hline
+	yaAB\$ & yaxa\$ & match(y)\\
+\hline
+	aAB\$  & axa\$  & match(a)\\
+\hline
+	AB\$   & xa\$   & predict 2\\
+\hline
+	xaAB\$ & xa\$   & match(x)\\
+\hline
+	aAB\$  & a\$    & match(a)\\
+\hline
+	AB\$   & \$     & error\\
+\hline
+\end{tabular}
+
+
+\end{document}
