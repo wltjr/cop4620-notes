@@ -727,13 +727,13 @@ State 0
     T $\rightarrow$ \textbf{.}ID \\
     T $\rightarrow$ \textbf{.}(E)
     }};
-    \node[state, shape=rectangle, right of=0, yshift=8mm] (1) {
+    \node[state, shape=rectangle, right of=0] (1) {
     \makecell[l] {
     State 1 R(3)\\
     \hline
     E $\rightarrow$ T\textbf{.}
     }};
-    \node[state, shape=rectangle, below of=1, yshift=14mm] (2) {
+    \node[state, shape=rectangle, below of=0, right of=0] (2) {
     \makecell[l] {
     State 2 R(4)\\
     \hline
@@ -756,16 +756,16 @@ State 0
     S $\rightarrow$ E\textbf{.}\$ \\
     E $\rightarrow$ E\textbf{.}+T
     }};
-    \node[very thick, state, shape=rectangle, right of=3] (5) {
+    \node[very thick, state, shape=rectangle, above of=1, right of=1] (5) {
     \makecell[l] {
     State 5\\
     \hline
     T $\rightarrow$ (E\textbf{.}) \\
     E $\rightarrow$ E\textbf{.}+T
     }};
-    \node[very thick, state, shape=rectangle, right of=5] (6) {
+    \node[very thick, state, shape=rectangle, below of=5] (6) {
     \makecell[l] {
-    State 6\\
+    State 6 R(5)\\
     \hline
     T $\rightarrow$ (E)\textbf{.}
     }};
@@ -777,7 +777,7 @@ State 0
     T $\rightarrow$ \textbf{.}ID \\
     T $\rightarrow$ \textbf{.}(E)
     }};
-    \node[very thick, state, shape=rectangle, right of=7] (8) {
+    \node[very thick, state, shape=rectangle, below of=7] (8) {
     \makecell[l] {
     State 8\\
     \hline
@@ -794,14 +794,14 @@ State 0
           (0) edge[left, above] node{ID} (2)
           (0) edge[right, left] node{(} (3)
           (0) edge[right, above] node{E} (4)
-          (3) edge[bend left=10, above] node{T} (1)
-          (3) edge[bend left=50, above] node{ID} (2)
-          (3) edge[loop above, above] node{(} (3)
-          (3) edge[right, above] node{E} (5)
+          (3) edge[bend left=30, above] node{T} (1)
+          (3) edge[bend left=80, right] node{ID} (2)
+          (3) edge[loop above, below] node{(} (3)
+          (3) edge[bend left, above] node{E} (5)
           (4) edge[right, left] node{+} (7)
           (4) edge[right, left] node{\$} (9)
           (5) edge[right, above] node{)} (6)
-          (5) edge[bend left=90, above] node{+} (7)
+          (5) edge[bend left=100, above] node{+} (7)
           (7) edge[right, above] node{ID} (2)
           (7) edge[bend left=90, above] node{(} (3)
           (7) edge[right, above] node{T} (8);
