@@ -4,16 +4,15 @@
     \date{Spring Semester 2022}
     \addtolength{\textheight}{3cm}
     \usepackage{amsmath}
-    \usepackage[T1]{fontenc}
-    \usepackage[tmargin=1in,lmargin=1in,rmargin=1in]{geometry}
-	\usepackage{titlesec}
+    \usepackage{enumitem}
+%   \usepackage{hyperref}
     \usepackage{makecell}
     \usepackage{multicol}
     \usepackage{soul}
-	\usepackage{enumitem}
-    \usepackage{makecell}
-	\usepackage{tikz}
-	\usepackage{hyperref}
+    \usepackage[T1]{fontenc}
+    \usepackage{tikz}
+    \usepackage[tmargin=1in,lmargin=1in,rmargin=1in]{geometry}
+    \usepackage{titlesec}
     \renewcommand\theadfont{\bfseries\sffamily}
     \usetikzlibrary{automata, positioning, arrows, babel,positioning,shapes}
     \tikzset{
@@ -24,9 +23,9 @@
         initial text=$ $, % sets the text that appears on the start arrow
     }
     \tikzstyle{vertex}=[draw,fill=black!15,circle,minimum size=20pt,inner sep=0pt]
-    
-	\hypersetup{ colorlinks=true, linkcolor=blue, filecolor=purple,urlcolor=cyan }
-    
+
+%	\hypersetup{ colorlinks=true, linkcolor=blue, filecolor=purple, urlcolor=cyan }
+
 	\titleformat{\chapter}[display]
 	{\bfseries\Large\itshape}
 	{Chapter\ \thechapter}{0.5ex}{ }
