@@ -188,7 +188,7 @@ Perform Common Subexpression Elimination (CSE) on this code. Rather than generat
   \hline
   6   & B = D + C   & \textbf{B = A} & \textr{$\leftarrow$ changed} \\
   \hline
-  7   & E = A + B   & \textbf{E = C} & \textr{$\leftarrow$ changed} \\
+  7   & E = A + B   & \textbf{E = A + B} & \\
   \hline
   8   & F = D + C   & \textbf{F = A} & \textr{$\leftarrow$ changed} \\
   \hline
@@ -196,7 +196,7 @@ Perform Common Subexpression Elimination (CSE) on this code. Rather than generat
   \hline
 \end{tabular}
 \begin{enumerate}
-  \item How many expressions are available after processing line 8? \textbf{4} \\
+  \item How many expressions are available after processing line 8? \textbf{2} \\
   \item Which of the following expressions will be available after processing line 8?
   \begin{tabular}{|l|l|l|}
   \hline
@@ -206,11 +206,11 @@ Perform Common Subexpression Elimination (CSE) on this code. Rather than generat
   \hline
   2 & A+B & \textbf{y} \\
   \hline
-  3 & C+B & \textbf{y} \\
+  3 & C+B & \textbf{n} \\
   \hline
   4 & D+C & \textbf{y} \\
   \hline
-  5 & E+F & \textbf{y} \\
+  5 & E+F & \textbf{n} \\
   \hline
   \end{tabular}
 \end{enumerate}
@@ -223,9 +223,9 @@ Perform \textit{liveness} analysis on this piece of code, assuming that it is th
   \hline
   \textbf{No.} &  & \textbf{Defined} & \textbf{Used} & \textbf{Live} \\
   \hline
-  1   & READ(A)     & -- & A     & \{A, B\} \\
+  1   & READ(A)     & A  & --    & \{A\} \\
   \hline
-  2   & READ(B)     & -- & B     & \{A, B\} \\
+  2   & READ(B)     & B  & --    & \{A, B\} \\
   \hline
   3   & C = A + B   & C  & A, B  & \{A, B, C\} \\
   \hline
@@ -264,7 +264,7 @@ Perform \textit{liveness} analysis on this piece of code, assuming that it is th
   \hline
   4   & D = A + B  & D  & A, B  & \{B, C, D\} \\
   \hline
-  5   & A = C + B  & A  & C, B  & \{A, B, C, D\} \textr{?} \\
+  5   & A = C + B  & A  & C, B  & \{A, B, C, D\} \\
   \hline
   6   & B = C + D  & B  & C, B  & \{A, B, C, D\} \\
   \hline
