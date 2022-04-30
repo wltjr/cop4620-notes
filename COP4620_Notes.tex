@@ -5,7 +5,7 @@
     \addtolength{\textheight}{3cm}
     \usepackage{amsmath}
     \usepackage{enumitem}
-%   \usepackage{hyperref}
+    \usepackage{hyperref}
     \usepackage{makecell}
     \usepackage{multicol}
     \usepackage{soul}
@@ -24,7 +24,7 @@
     }
     \tikzstyle{vertex}=[draw,fill=black!15,circle,minimum size=20pt,inner sep=0pt]
 
-%	\hypersetup{ colorlinks=true, linkcolor=blue, filecolor=purple, urlcolor=cyan }
+	\hypersetup{ colorlinks=true, linkcolor=blue, filecolor=purple, urlcolor=cyan }
 
 	\titleformat{\chapter}[display]
 	{\bfseries\Large\itshape}
@@ -1774,38 +1774,5 @@ State 0
     predict (5. B $\rightarrow$ Bz) = \textbf{ \{z\} $\leftarrow$ Final}\newline
     predict (6. B $\rightarrow$ $\lambda$) = \textbf{ \{z, \$\} $\leftarrow$ Final}\newline
 \end{multicols}
-
-\renewcommand\thechapter{4}
-\chapter{Semantic Actions - Lecture 4 : 3-9-2022}
-\section{Abstract Parse Tree (AST)}
-%\begin{multicols}{2}
-AST for: $w := x + y * (z + 3)$ \newline
-    \begin{tikzpicture}
-    \node[vertex]
-    {:=}
-        child {
-            node[vertex] {w}
-        } child {
-            node[vertex] {+}
-            child { node[vertex] {x} }
-            child {
-                node[vertex] {*}
-                child { node[vertex] {y} }
-                child {
-                    node[vertex] {+}
-                    child { node[vertex] {z} }
-                    child {
-                        node[vertex] {3}
-                    }
-                }
-            }
-        }
-    ;
-\end{tikzpicture} \newline
-Post Order: w, x, y, z, 3, +, *, +, :=
-%\end{multicols}
-
-
-
 
 \end{document}
