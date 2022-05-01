@@ -8,7 +8,7 @@
     \usepackage[dvipsnames]{xcolor}
     \usepackage{enumitem}
     \usepackage{helvet}
-    \usepackage{hyperref}
+%    \usepackage{hyperref}
     \usepackage{makecell}
     \usepackage{multicol}
     \usepackage{soul}
@@ -21,7 +21,7 @@
 
     \algdef{SE}{Begin}{End}{\textbf{begin}}{\textbf{end}}
 
-    \hypersetup{ colorlinks=true, linkcolor=blue, filecolor=purple, urlcolor=cyan }
+%    \hypersetup{ colorlinks=true, linkcolor=blue, filecolor=purple, urlcolor=cyan }
 
     \newcommand{\comment}[1]{}
     \newcommand{\textb}[1]{\textcolor{blue}{#1}}
@@ -253,7 +253,7 @@ Leaf nodes: \textbf{5} \\
             }
         }
     ;
-\end{tikzpicture} \\
+  \end{tikzpicture} \\
 \end{multicols}
 
 \vspace{-8em}
@@ -262,6 +262,7 @@ L-value := R-value
 \begin{description}
   \item [L-values]: addresses which can be stored to or loaded from
   \item [R-values]: data (often loaded from addresses)
+  \item [C]: a constant
 \end{description} \ \\
   \begin{tikzpicture}
     \node[state, shape=rectangle] (0) {
@@ -318,7 +319,7 @@ L-value := R-value
     \hspace{2.5em} ADD T$_2$, 3, T$_1$ \\
     \hspace{2.5em} LD y, T$_4$ \\
     \hspace{2.5em} MUL T$_4$, T$_1$, T$_3$ \\
-    \hspace{2.5em} LD y, T$_4$ \\
+    \hspace{2.5em} LD x, T$_6$ \\
     \hspace{2.5em} ADD T$_6$, T$_3$, T$_5$
     }};
     \node[state, shape=rectangle, right of=6, xshift=20pt] (7) {
@@ -329,7 +330,7 @@ L-value := R-value
     \hspace{2.5em} ADD T$_2$, 3, T$_1$ \\
     \hspace{2.5em} LD y, T$_4$ \\
     \hspace{2.5em} MUL T$_4$, T$_1$, T$_3$ \\
-    \hspace{2.5em} LD y, T$_4$ \\
+    \hspace{2.5em} LD x, T$_6$ \\
     \hspace{2.5em} ADD T$_6$, T$_3$, T$_5$ \\
     \hspace{2.5em} ST T$_5$, w
     }};
@@ -495,5 +496,306 @@ DEFAULT: \\
 OUT:
 \end{multicols}
 
+
+\renewcommand\thechapter{E2}
+\chapter{Final Exam - Practice Questions}
+\section{Q1}
+Draw the abstract syntax tree along with the data object of the root node for
+the following piece of code: \\ \textbfr{a := b + c * d + e} \\
+\scalebox{.8}{
+  \begin{tikzpicture}
+    \node[vertex]
+    {:=}
+        child {
+            node[vertex] {a}
+        } child {
+            node[vertex] {+}
+            child { node[vertex] {b} }
+            child {
+                node[vertex] {*}
+                child { node[vertex] {c} }
+                child {
+                    node[vertex] {+}
+                    child { node[vertex] {d} }
+                    child { node[vertex] {e} }
+                }
+            }
+        }
+    ;
+  \end{tikzpicture} \\
+}
+\scalebox{.9}{
+  \begin{tikzpicture}
+    \node[state, shape=rectangle] (0) {
+    \makecell[l] {
+    Temp: a \\
+    Type: L-val \\
+    Code: --
+    }};
+    \node[state, shape=rectangle, right of=0] (1) {
+    \makecell[l] {
+    Temp: b \\
+    Type: L-val \\
+    Code: --
+    }};
+    \node[state, shape=rectangle, right of=1] (2) {
+    \makecell[l] {
+    Temp: c \\
+    Type: L-val \\
+    Code: --
+    }};
+    \node[state, shape=rectangle, right of=2] (3) {
+    \makecell[l] {
+    Temp: d \\
+    Type: L-val \\
+    Code: --
+    }};
+    \node[state, shape=rectangle, right of=3] (4) {
+    \makecell[l] {
+    Temp: e \\
+    Type: L-val \\
+    Code: --
+    }};
+    \node[state, shape=rectangle, below of=0] (4) {
+    \makecell[l] {
+    Temp: T$_1$ \\
+    Type: R-val \\
+    Code: LD d,T$_2$ \\
+    Code: LD e,T$_3$ \\
+    \hspace{2.5em} ADD T$_2$, T$_3$, T$_1$
+    }};
+    \node[state, shape=rectangle, right of=4, xshift=20pt] (5) {
+    \makecell[l] {
+    Temp: T$_4$ \\
+    Type: R-val \\
+    Code: LD d,T$_2$ \\
+    \hspace{2.5em} LD e,T$_3$ \\
+    \hspace{2.5em} ADD T$_2$,T$_3$,T$_1$ \\
+    \hspace{2.5em} LD c,T$_5$ \\
+    \hspace{2.5em} MUL T$_5$,T$_1$,T$_4$
+    }};
+    \node[state, shape=rectangle, right of=5, xshift=20pt] (6) {
+    \makecell[l] {
+    Temp: T$_6$ \\
+    Type: R-val \\
+    Code: LD d,T$_2$ \\
+    \hspace{2.5em} LD e,T$_3$ \\
+    \hspace{2.5em} ADD T$_2$,T$_3$,T$_1$ \\
+    \hspace{2.5em} LD c,T$_5$ \\
+    \hspace{2.5em} MUL T$_5$,T$_1$,T$_4$ \\
+    \hspace{2.5em} LD b, T$_7$ \\
+    \hspace{2.5em} ADD T$_7$, T$_4$, T$_6$
+    }};
+    \node[state, shape=rectangle, right of=6, xshift=20pt] (7) {
+    \makecell[l] {
+    Temp: -- \\
+    Type: -- \\
+    Code: \textbf{LD d,T$_2$} \\
+    \hspace{2.5em} \textbf{LD e,T$_3$} \\
+    \hspace{2.5em} \textbf{ADD T$_2$,T$_3$,T$_1$} \\
+    \hspace{2.5em} \textbf{LD c,T$_5$} \\
+    \hspace{2.5em} \textbf{MUL T$_5$,T$_1$,T$_4$} \\
+    \hspace{2.5em} \textbf{LD b, T$_7$} \\
+    \hspace{2.5em} \textbf{ADD T$_7$, T$_4$, T$_6$} \\
+    \hspace{2.5em} \textbf{ST T$_6$, w}
+    }};
+  \end{tikzpicture}
+}
+
+
+\vspace{-2em}
+\section{Q2}
+Consider the following piece of code:
+\begin{center}
+  \begin{tabular}{|c|l|>{\bfseries}l|>{\bfseries}l|>{\bfseries}l|}
+    \hline
+  	& Code & Available$_1$ & Code$_2$ & Available$_3$ \\
+    \hline
+    1: & A = B + C & B + C & A = B + C & --    \\
+    2: & B = B + C & --    & B = A     & --    \\
+    3: & Q = A + C & A + C & Q = A + C & A + C \\
+    4: & A = A + C & --    & A = Q     & --    \\
+    5: & P = B + C & B + C & B = B + C & B + C \\
+    \hline
+  \end{tabular} \ \\
+\end{center}
+\begin{enumerate}
+  \item Assume there is no aliasing between variables. For each statement, list which expressions are "available" \textit{after} the statement executes.
+  \item What does the code look like after performing CSE? Leave the code in IR form.
+When eliminating a redundant expression, replace it with the variable that holds
+the previous result of computing the expression.
+  \item How would your response to part 2 change if A and B were aliased? \\
+  \textbf{Statement 2 would not longer be redundant \\ (because statement 1 would immediately kill "B+C")}
+\end{enumerate}
+
+\section{Q3}
+Consider the following code (assume this is the full program):
+\vspace{-1em}
+\begin{multicols}{2}
+\begin{enumerate}
+  \item Show which variables and temporaries are live after each instruction (assume
+no aliasing)
+  \item Consider Instruction 7 in the code.\\
+   What variables would be live after instruction 7 if A may be aliased to B and C. \\
+   \textbf{Instruction 8 uses A \& B \& may use C \\
+   (because A may be aliased to C) \\
+   \{A,B\} $\Rightarrow$ \{A,B,C\}}
+\end{enumerate}
+  \begin{tabular}{|c|l|>{\bfseries}l|>{\bfseries}l|>{\bfseries}l|}
+    \hline
+  	& Code & Def & Use & Live \\
+    \hline
+     1: & A = 7       & A  & --   & {A,C}    \\
+     2: & B = 8       & B  & --   & {A,B,C}  \\
+     3: & T1 = A + B  & T1 & A,B  & {A,B,C,T1} \\
+     4: & T2 = T1 + C & T2 & T1,C & {A,B,T2} \\
+     5: & C = A + B   & C  & A,B  & {B,C,T2} \\
+     6: & T3 = T2 + C & T3 & T2,C & {B,C,T3} \\
+     7: & A = C + T3  & A  & C,T3 & {A,B}    \\
+     8: & T4 = A + B  & T4 & A,B  & {A,T4}   \\
+     9: & B = A + T4  & B  & A,T4 & {B}      \\
+    10: & WRITE(B)    & -- & B    & {}       \\
+    \hline
+  \end{tabular}
+\end{multicols}
+
+
+\section{Q4}
+\vspace{-1em}
+\begin{multicols}{2}
+Assume you have a machine with 2 ALUs (ALU0 and ALU1) and one LD/ST unit.
+Your instruction set consists of 5 instructions: ADD, MUL, LOAD and STORE. An
+ADD instruction can be performed on either ALU, and takes one cycle. A MUL
+instruction can be performed on ALU0 or ALU1, and takes two cycles. A LOAD
+takes up either of the ALUs for one cycle, then the LD/ST unit for two cycles. A
+STORE takes up either of the ALUs for one cycle, then the LD/ST unit for one cycle.
+All of the functional units are fully pipelined. Draw the reservation tables for the
+instructions.
+  \vfill\columnbreak
+  \begin{tabular}{|c|>{\bfseries}c|>{\bfseries}c|>{\bfseries}l|>{\bfseries}l|}
+    \hline
+  	& ALU0   & ALU1 & LD/DT \\
+    \hline
+    ADD(1)   & X &   &  \\
+    \hline
+    ADD(2)   &   & X &  \\
+    \hline
+    MUL(1)   & X &   &  \\
+             &   &   &  \\
+    \hline
+    MUL(2)   &   &   &  \\
+             &   &   &  \\
+    \hline
+    LD(1)    & X &   &   \\
+             &   &   & X \\
+             &   &   &  \\
+    \hline
+    STORE(1) & X &   &   \\
+             &   &   & X \\
+    \hline
+    STORE(2) &   & X &   \\
+             &   &   & X \\
+    \hline
+  \end{tabular}
+\end{multicols}
+
+\section{Q5}
+Draw the data dependence graph for the following piece of code. Don't forget to label the dependence edges with their latency
+\vspace{-1em}
+\begin{multicols}{2}
+\begin{enumerate}
+  \item R1 = LOAD(A)
+  \item R2 = LOAD(B)
+  \item R3 = LOAD(C)
+  \item R4 = R2 + R1
+  \item R5 = R4 * R1
+  \item R6 = R1 + R2
+  \item R7 = R4 + R6
+  \item R8 = R5 * R6
+  \item R9 = R8 + R7
+  \item R10 = R3 * R9
+  \item D = STORE(R10)
+\end{enumerate}
+6 can be 7 or 8, max(7,8) = 8 \\
+  \begin{tabular}{|c|>{\bfseries}c|>{\bfseries}c|>{\bfseries}l|>{\bfseries}l|}
+    \hline
+  	Cycle & ALU0   & ALU1 & LD/DT \\
+    \hline
+     0 &  1 &   &    \\
+    \hline
+     1 &  2 &   & 1  \\
+    \hline
+     2 &  3 &   & 2  \\
+    \hline
+     3 &    &   & 3  \\
+    \hline
+     4 &  4 & 6 &    \\
+    \hline
+     5 &  5 & 7 &    \\
+    \hline
+     6 &    &   &    \\
+    \hline
+     7 &  8 &   &    \\
+    \hline
+     8 &    &   &    \\
+    \hline
+     9 &  9 &   &    \\
+    \hline
+    10 & 10 &   &    \\
+    \hline
+    11 &    &   &    \\
+    \hline
+    12 & 11 &   &    \\
+    \hline
+    13 &    &   & 11 \\
+    \hline
+  \end{tabular}
+  \vfill\columnbreak
+  \setlength{\leftskip}{-2em}
+  \begin{tikzpicture}[->, >=stealth', node distance=2cm]
+    \node[state] (1) {1};
+    \node[state, above of=4, right of=4] (2) {2};
+    \node[state, below of=2] (4) {4};
+    \node[state, right of=2] (3) {3};
+    \node[state, below of=4, left of=4] (5) {5};
+    \node[state, below of=4, right of=4] (6) {6};
+    \node[state, below of=4] (7) {7};
+    \node[state, below of=7, left of=7] (8) {8};
+    \node[state, below of=6, right of=7] (9) {9};
+    \node[state, right of=9] (10) {10};
+    \node[state, right of=10] (11) {11};
+    \draw[very thick]
+      (1) edge[left, below, bend right=20] node{3} (4)
+      (1) edge[left, left] node{3} (5)
+      (1) edge[left, left, bend left=50] node{3} (6)
+      (2) edge[left, right] node{3} (4)
+      (2) edge[left, right, bend left=20] node{3} (6)
+      (3) edge[left, right] node{3} (10)
+      (4) edge[left, above] node{1} (5)
+      (4) edge[left, left] node{1} (7)
+      (5) edge[left, left] node{2} (8)
+      (6) edge[left, above] node{1} (7)
+      (6) edge[left, right] node{1} (8)
+      (7) edge[left, above] node{1} (9)
+      (8) edge[left, above] node{2} (9)
+      (9) edge[left, above] node{1} (10)
+      (10) edge[left, above] node{2} (11);
+    \node [annotation, left] at (1.west) {\tikz{\node[gray box=1] {13};}};
+    \node [annotation, above, left] at (2.west) {\tikz{\node[gray box=1] {13};}};
+    \node [annotation, right] at (3.east) {\tikz{\node[gray box=1] {7};}};
+    \node [annotation, right] at (4.east) {\tikz{\node[gray box=1] {10};}};
+    \node [annotation, left] at (5.west) {\tikz{\node[gray box=1] {9};}};
+    \node [annotation, right] at (6.east) {\tikz{\node[gray box=1] {8};}};
+    \node [annotation, left] at (7.west) {\tikz{\node[gray box=1] {6};}};
+    \node [annotation, below] at (8.south) {\tikz{\node[gray box=1] {7};}};
+    \node [annotation, below] at (9.south) {\tikz{\node[gray box=1] {5};}};
+    \node [annotation, below] at (10.south) {\tikz{\node[gray box=1] {4};}};
+    \node [annotation, below] at (11.south) {\tikz{\node[gray box=1] {2};}};
+  \end{tikzpicture} \ \\
+  
+  \textbf{Order 1, 2, 3, 4, 6, 5, 7, 8, 9, 10, 11} \\
+
+  \textbf{14 Cycles to complete}
+\end{multicols}
 
 \end{document}
