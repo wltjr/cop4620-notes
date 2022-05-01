@@ -25,7 +25,7 @@
 
     \newcommand{\comment}[1]{}
     \newcommand{\textb}[1]{\textcolor{blue}{#1}}
-    \newcommand{\textg}[1]{\textcolor{ForestGreen}{#1}}
+    \newcommand{\textg}[1]{\textcolor{green}{#1}}
     \newcommand{\textp}[1]{\textcolor{purple}{#1}}
     \newcommand{\textr}[1]{\textcolor{red}{#1}}
     \newcommand{\textbfb}[1]{\textbf{\textb{#1}}}
@@ -59,15 +59,8 @@
         initial text=$ $, % sets the text that appears on the start arrow
     }
     \tikzset{
-      gray box/.style={
-		fill=gray!20,
-		draw=gray,
-		minimum width={2*#1ex},
-		minimum height={2em},
-	  },
-  		annotation/.style={
-    	anchor=north,
-      }
+      gray  box/.style={ fill=gray!20,  draw=gray, minimum width={2*#1ex}, minimum height={2em}, },
+  		annotation/.style={ anchor=north, }
   	}
     \tikzstyle{vertex}=[draw,fill=black!15,circle,minimum size=20pt,inner sep=0pt]
 
@@ -794,6 +787,271 @@ How many live sets contain exactly 3 variables? \textbf{3}
 3 - colorable graph - 3 registers needed \\
 Edges are live, each pair of variables live together will be connected in graph. \\
 Colors represent the number of available registers \\
+
+\newpage
+\section{Interference graph}
+\vspace{-1em}
+\begin{multicols}{2}
+\begin{tabular}{c|l|c|l|>{\bfseries}l}
+  \textbf{No.} & \textbf{Instruction} & \textbf{Defined} & \textbf{Used} & \textbf{Live} \\
+  \hline
+   1  & b = a + 1    & b  & a, b & \{a\}    \\
+   2  & c = b * b    & c  & b, c & \{a, b\} \\
+   3  & b = c + 1    & b  & b, c & \{a, c\} \\
+   4  & return b * a & -- & a, b & \{a, b\} \\
+\end{tabular}
+\vfill\columnbreak
+  \begin{tikzpicture}
+    \node[green, vertex]
+    {a}
+        child { node[blue, vertex] {b} }
+        child { node[blue, vertex] {c} }
+    ;
+  \end{tikzpicture}
+\end{multicols}
+
+
+\vspace{-2em}
+\section{Coloring a graph, Kempe's Algorithm (1879) - Slides 29 - 30}
+\begin{description}[style=multiline,leftmargin=9em]
+  \item [\textr{Step 1 (simplify):}] Find a node with \textbfr{at most K-1} edges and cut it out of the graph. \\
+  (Remember/add this node on a stack for later stages.)
+  \item [Note:] Once a coloring is found for the simpler graph, we can always color the node we saved on the stack
+  \item [\textr{Step 2 (color):}] When the simplified subgraph has been colored, add back the node on the top of the stack and assign it a color not taken by one of the adjacent nodes
+\end{description}
+
+\section{Coloring - Slides 31 - 41}
+\vspace{-1em}
+\begin{multicols}{2}
+  \begin{multicols}{2}
+    \begin{enumerate}
+      \item Remove k-1 edge and add to stack
+      \item When last node start coloring
+      \item Add back one at a time from stack
+      with different color than neighbor
+    \end{enumerate}
+  \begin{tikzpicture}
+    \node[green, vertex]
+    {a}
+        child {
+           node[blue, vertex] {b}
+           child { node[green, vertex] {d} }
+           child { node[green, vertex] {e} }
+        }
+        child { node[blue, vertex] {c} }
+    ;
+  \end{tikzpicture}
+  \end{multicols}
+\vfill\columnbreak
+  \begin{tikzpicture}[node distance=-0.5pt]
+    \node [gray box=2] (10) {};
+    \node [gray box=2, below=of 10] (11) {}; 
+    \node [gray box=2, below=of 11] (12) {};
+    \node [gray box=2, below=of 12] (13) {};
+    \node [gray box=2, below=of 13] (14) {c};
+    \node [gray box=2, right=of 10, xshift=5pt] (20) {};
+    \node [gray box=2, below=of 20] (21) {}; 
+    \node [gray box=2, below=of 21] (22) {};
+    \node [gray box=2, below=of 22] (23) {e};
+    \node [gray box=2, below=of 23] (24) {c};
+    \node [gray box=2, right=of 20, xshift=5pt] (30) {};
+    \node [gray box=2, below=of 30] (31) {}; 
+    \node [gray box=2, below=of 31] (32) {a};
+    \node [gray box=2, below=of 32] (33) {e};
+    \node [gray box=2, below=of 33] (34) {c};
+    \node [gray box=2, right=of 30, xshift=5pt] (40) {};
+    \node [gray box=2, below=of 40] (41) {b}; 
+    \node [gray box=2, below=of 41] (42) {a};
+    \node [gray box=2, below=of 42] (43) {e};
+    \node [gray box=2, below=of 43] (44) {c};
+    \node [gray box=2, right=of 40, xshift=5pt] (50) {\textg{d}};
+    \node [gray box=2, below=of 50] (51) {\textb{b}};
+    \node [gray box=2, below=of 51] (52) {\textg{a}};
+    \node [gray box=2, below=of 52] (53) {\textg{e}};
+    \node [gray box=2, below=of 53] (54) {\textb{c}};
+    \node [gray box=2, right=of 50, xshift=5pt] (60) {};
+    \node [gray box=2, below=of 60] (61) {\textb{b}}; 
+    \node [gray box=2, below=of 61] (62) {\textg{a}};
+    \node [gray box=2, below=of 62] (63) {\textg{e}};
+    \node [gray box=2, below=of 63] (64) {\textb{c}};
+    \node [gray box=2, right=of 60, xshift=5pt] (70) {};
+    \node [gray box=2, below=of 70] (71) {}; 
+    \node [gray box=2, below=of 71] (72) {\textg{a}};
+    \node [gray box=2, below=of 72] (73) {\textg{e}};
+    \node [gray box=2, below=of 73] (74) {\textb{c}};
+    \node [gray box=2, right=of 70, xshift=5pt] (80) {};
+    \node [gray box=2, below=of 80] (81) {}; 
+    \node [gray box=2, below=of 81] (82) {};
+    \node [gray box=2, below=of 82] (83) {\textg{e}};
+    \node [gray box=2, below=of 83] (84) {\textb{c}};
+    \node [gray box=2, right=of 80, xshift=5pt] (90) {};
+    \node [gray box=2, below=of 90] (91) {}; 
+    \node [gray box=2, below=of 91] (92) {};
+    \node [gray box=2, below=of 92] (93) {};
+    \node [gray box=2, below=of 93] (94) {\textb{c}};
+    \node [gray box=2, right=of 90, xshift=5pt] (100) {};
+    \node [gray box=2, below=of 100] (101) {}; 
+    \node [gray box=2, below=of 101] (102) {};
+    \node [gray box=2, below=of 102] (103) {};
+    \node [gray box=2, below=of 103] (104) {};
+    \node [annotation, above] at (10.north) {1};
+    \node [annotation, above] at (20.north) {2};
+    \node [annotation, above] at (30.north) {3};
+    \node [annotation, above] at (40.north) {4};
+    \node [annotation, above] at (50.north) {5};
+    \node [annotation, above] at (60.north) {6};
+    \node [annotation, above] at (70.north) {7};
+    \node [annotation, above] at (80.north) {8};
+    \node [annotation, above] at (90.north) {9};
+    \node [annotation, above] at (100.north) {10};
+  \end{tikzpicture}
+\end{multicols}
+
+
+\vspace{-2em}
+\subsection{In Class Quiz 2 - Slide 44}
+\vspace{-1em}
+\begin{multicols}{2}
+\begin{tabular}{c|l|c|l|>{\bfseries}l}
+  \textbf{No.} &  & \textbf{Defined} & \textbf{Used} & \textbf{Live} \\
+  \hline
+   1  & v := 1            & v  & --      & \{v\}       \\
+   2  & z := v + 1        & z  & v       & \{v, z\}    \\
+   3  & x := z * v        & x  & z, v    & \{x, z\}    \\
+   4  & y := x * 2        & y  & x       & \{x, y, z\} \\
+   5  & w := x + z * y    & w  & x, z, y & \{w, y, z\} \\
+   6  & u := z + 2        & u  & z       & \{u, w, y\} \\
+   7  & v := u + w + y    & v  & u, w, y & \{u, v\}    \\
+   8  & return v * u      & -- & u, v    & \{\}        \\
+\end{tabular} \\
+Apply Kempe’s algorithm to perform global register allocation for the given code. \\
+Is the graph 3-colorable? \textbf{Yes}
+  \vfill\columnbreak
+\scalebox{.875}{
+  \begin{tikzpicture}[>=stealth', node distance=1.5cm]
+    \node[green, state] (v) {v};
+    \node[blue,  state, above of=v, left of=v] (w) {w};
+    \node[red,   state, above of=w, right of=w] (z) {z};
+    \node[blue,  state, above of=z, left of=z] (x) {x};
+    \node[green, state, below of=x, left of=x] (y) {y};
+    \node[red,   state, below of=w, left of=w] (u) {u};
+    \draw[very thick]
+      (u) edge (y)
+      (v) edge (u)
+      (v) edge (z)
+      (w) edge (u)
+      (w) edge (y)
+      (w) edge (z)
+      (x) edge (y)
+      (x) edge (z)
+      (y) edge (z);
+  \end{tikzpicture}
+  \begin{tikzpicture}[node distance=-0.5pt]
+    \node [gray box=2] (10) {\textr{z}};
+    \node [gray box=2, below=of 10] (11) {\textg{y}}; 
+    \node [gray box=2, below=of 11] (12) {\textb{w}};
+    \node [gray box=2, below=of 12] (13) {\textr{u}};
+    \node [gray box=2, below=of 13] (14) {\textg{v}};
+    \node [gray box=2, below=of 14] (15) {\textb{x}};
+    \node [gray box=2, right=of 10, xshift=5pt] (20) {\textr{z}};
+    \node [gray box=2, below=of 20] (21) {\textg{y}}; 
+    \node [gray box=2, below=of 21] (22) {w};
+    \node [gray box=2, below=of 22] (23) {\textr{u}};
+    \node [gray box=2, below=of 23] (24) {\textg{v}};
+    \node [gray box=2, below=of 24] (25) {\textb{x}};
+  \end{tikzpicture}
+  \begin{tikzpicture}[>=stealth', node distance=1.5cm]
+    \node[green, state] (v) {v};
+    \node[state, above of=v, left of=v] (w) {w};
+    \node[red,state, above of=w, right of=w] (z) {z};
+    \node[blue,  state, above of=z, left of=z] (x) {x};
+    \node[green, state, below of=x, left of=x] (y) {y};
+    \node[red,   state, below of=w, left of=w] (u) {u};
+    \draw[very thick]
+      (u) edge (y)
+      (v) edge (u)
+      (v) edge (z)
+      (w) edge (u)
+      (w) edge (y)
+      (w) edge (z)
+      (x) edge (y)
+      (x) edge (z)
+      (y) edge (z);
+  \end{tikzpicture}
+  }
+\end{multicols}
+\vspace{-1em}
+
+\begin{multicols}{2}
+\subsection{In Class Quiz 3 - Slide 44}
+Is the graph 4-colorable? \textbf{yes}
+\subsection{In Class Quiz 3 - Slide 45}
+Is the graph 2-colorable? \textbf{no}
+\end{multicols}
+
+\scalebox{.85}{
+  \begin{tikzpicture}[>=stealth', node distance=1.5cm]
+    \node[state] (v) {v};
+    \node[state, above of=v, left of=v] (w) {w};
+    \node[state, above of=w, right of=w] (z) {z};
+    \node[state, above of=z, left of=z] (x) {x};
+    \node[state, below of=x, left of=x] (y) {y};
+    \node[state, below of=w, left of=w] (u) {u};
+    \draw[very thick]
+      (u) edge (y)
+      (v) edge (u)
+      (v) edge (z)
+      (w) edge (u)
+      (w) edge (y)
+      (w) edge (z)
+      (x) edge (y)
+      (x) edge (z)
+      (y) edge (z);
+  \end{tikzpicture}
+  \begin{tikzpicture}[>=stealth', node distance=1.5cm]
+    \node[state] (v) {v};
+    \node[state, above of=v, left of=v] (w) {w};
+    \node[state, above of=w, right of=w] (z) {z};
+    \node[state, below of=x, left of=x] (y) {y};
+    \node[state, below of=w, left of=w] (u) {u};
+    \draw[very thick]
+      (u) edge (y)
+      (v) edge (u)
+      (v) edge (z)
+      (w) edge (u)
+      (w) edge (y)
+      (w) edge (z)
+      (y) edge (z);
+  \end{tikzpicture}
+  \begin{tikzpicture}[>=stealth', node distance=1.5cm]
+    \node[state, above of=v, left of=v] (w) {w};
+    \node[state, above of=w, right of=w] (z) {z};
+    \node[state, below of=x, left of=x] (y) {y};
+    \node[state, below of=w, left of=w] (u) {u};
+    \draw[very thick]
+      (u) edge (y)
+      (w) edge (u)
+      (w) edge (y)
+      (w) edge (z)
+      (y) edge (z);
+  \end{tikzpicture}
+  \begin{tikzpicture}[>=stealth', node distance=1.5cm]
+    \node[state, above of=v, left of=v] (w) {w};
+    \node[state, above of=w, right of=w] (z) {z};
+    \node[state, below of=x, left of=x] (y) {y};
+    \draw[very thick]
+      (w) edge (y)
+      (w) edge (z)
+      (y) edge (z);
+  \end{tikzpicture}
+  \begin{tikzpicture}[>=stealth', node distance=1.5cm]
+    \node[state, above of=w, right of=w] (z) {z};
+    \node[state, below of=x, left of=x] (y) {y};
+    \draw[very thick]
+      (y) edge (z);
+  \end{tikzpicture} 
+}
+\vspace{-3em}
 
 
 \renewcommand\thechapter{E2}
