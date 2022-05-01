@@ -17,7 +17,7 @@
     \usepackage[tmargin=1in,lmargin=1in,rmargin=1in]{geometry}
     \usepackage{titlesec}
     \usepackage{xcolor}
-    \usetikzlibrary{automata, positioning, arrows, babel,positioning,shapes}
+    \usetikzlibrary{automata, decorations.markings, positioning, arrows, arrows.meta, babel, positioning, shapes}
 
     \algdef{SE}{Begin}{End}{\textbf{begin}}{\textbf{end}}
 
@@ -411,7 +411,9 @@ If-elseif statement: \\
 \textp{else} \\
 \indent \textp{<stmt\_list\_3>} \\
 \textg{Endif}
-\section{In Class Quiz 1 - Slide 9}
+
+
+\subsection{In Class Quiz 1 - Slide 9}
 \vspace{.5em}
 Generate 3AC for the given if-elseif statement.
 How many unconditional jumps and labels are included? \\
@@ -439,7 +441,9 @@ Generated assembly code: \\
 while \textr{<bool\_expr>} \\
 \indent \textb{<stmt\_list>} \\
 endwhile;
-\section{In Class Quiz 2 - Slide 14}
+
+
+\subsection{In Class Quiz 2 - Slide 14}
 \vspace{1em}
 In the previous While loop, what is the 3AC \\ 
 for a \textit{break} statement? \textbf{jmp OUT}
@@ -458,7 +462,9 @@ OUT:
 for (\textr{<init\_stmt>};\textb{<bool\_expr>};\textg{<incr\_stmt>}) \\
 \indent \textp{<stmt\_list>} \\
 end
-\section{In Class Quiz 3 - Slide 19}
+
+
+\subsection{In Class Quiz 3 - Slide 19}
 In the previous For loop, what is the 3AC \\
 for a \textit{continue} statement?
 \textbf{jmp INCR}
@@ -495,6 +501,299 @@ DEFAULT: \\
 \indent <stmt\_list> \\
 OUT:
 \end{multicols}
+
+
+\setcounter{chapter}{6}
+\chapter{Code Generation \& Local Optimization}
+\section{Naïve approach}
+\vspace{-1em}
+\begin{multicols}{6}
+ \ \\
+\textr{MUL A,4,B} \\
+\vfill\columnbreak
+ \ \\
+\begin{tikzpicture}
+\draw [-{Stealth[length=3mm, width=2mm]}] (0,0) -- (2,0);
+\end{tikzpicture}
+\vfill\columnbreak
+\textr{LD A,R1} \\
+\textr{MOV 4,R2} \\
+\textr{MUL R1,R2,R3} \\
+\textr{ST R3,B}
+\vfill\columnbreak
+ \ \\
+\textb{MUL A,4,B}
+\vfill\columnbreak
+ \ \\
+\begin{tikzpicture}
+\draw [-{Stealth[length=3mm, width=2mm]}] (0,0) -- (2,0);
+\end{tikzpicture}
+\vfill\columnbreak
+\textb{LD A,R1} \\
+\textb{MUL R1,4,R3} \\
+\textb{ST R3,B}
+\end{multicols}
+\vspace{-1em}
+\textbf{Too many instructions. Could use a different instruction type.} \\
+
+
+\vspace{-1.5em}
+\subsection{Activity - Slide 5}
+\vspace{-1em}
+\begin{multicols}{6}
+ \ \\
+ADD A,B,C $\longrightarrow$
+\vfill\columnbreak
+LD A,R1 \\
+LD B,R2 \\
+ADD R1,R2,R3 \\
+ST R3,C
+\vfill\columnbreak
+ \ \\
+ADD C,A,E $\longrightarrow$
+\vfill\columnbreak
+LD C,R4 \\
+LD A,R5 \\
+ADD R4,R5,R6 \\
+ST R6,E
+\vfill\columnbreak
+ \ \\
+ADD A,B,D $\longrightarrow$
+\vfill\columnbreak
+LD A,R7 \\
+LD B,R8 \\
+ADD R7,R8,R9 \\
+ST R9,D
+\end{multicols}
+\vspace{-1em}
+\textbf{Reduce loads of A, B, C. Reduce compuation of A + B. Too may registers.} \\
+
+
+\vspace{-1.5em}
+\section{Peephole optimizations}
+\vspace{-1em}
+\begin{itemize}
+\begin{multicols}{2}
+  \item Constant folding \\
+    \textr{ADD lit1, lit2, Rx} $\longrightarrow$  \textb{MOV lit1 + lit2, Rx} \\
+    \textr{MOV lit1, Rx} $\longrightarrow$ \textb{MOV lit1 + lit2, Ry} \\
+    \textr{ADD li2, Rx, Ry}
+  \item Strength reduction \\
+    \textr{MUL operand, 2, Rx} $\longrightarrow$ \textb{SHIFTL operand, 1, Rx} \\
+    \textr{DIV operand, 4, Rx} $\longrightarrow$ \textb{SHIFTR operand, 2, Rx}
+  \item Null sequences \\
+    \textr{MUL operand, 1, Rx} $\longrightarrow$ \textb{MOV operand, Rx} \\
+    \textr{ADD operand, 0, Rx} $\longrightarrow$ \textb{MOV operand, Rx}
+\vfill\columnbreak
+  \item Combine operations \\
+    \textr{JEQ L1} \\
+    \textr{JMP L2} $\longrightarrow$ \textb{JNE L2} \\
+    \textr{L1: ...}
+  \item Simplifying \\
+    \textr{SUB 0,, operand Rx} $\longrightarrow$ \textb{NEG operand Rx}
+  \item Special cases (taking advantage of ++/--) \\
+    \textr{ADD 1, Rx, Rx} $\longrightarrow$ \textb{INC Rx} \\
+    \textr{SUB Rx, 1, Rx} $\longrightarrow$ \textb{DEC Rx}
+  \item Address mode operations \\
+    \textr{MOV A R1} \\
+    \textr{ADD 0(R1) R2 R3} $\longrightarrow$ \textb{ADD @A R2 R3}
+\end{multicols}
+\end{itemize}
+
+\vspace{-3em}
+\section{Common Subexpression Elimination (CSE)}
+\vspace{-1em}
+\begin{multicols}{4}
+Three address code \\
++ A B T1  \\
++ T1 C T2 \\
++ A B T3  \\
++ T1 T2 C \\
++ T1 C T4 \\
++ T3 T2 D
+\vfill\columnbreak
+Generated code \\
+ADD A B R1 \\
+ADD R1 C R2 \\
+MOV R1 R3 \\
+ADD R1 R2 R5; ST R5 C \\
+ADD R1 C R4 \\
+ADD R3 R2 R6; ST R6 \\
+(C in R5, no need for R6)
+\vfill\columnbreak
+Available Expressions \\
+"A+B", T1 \\
+\st{"T1+C", T2} (killed) \\
+
+"T1+T2", C  (updates C) \\
+"T1+C", T4 \\
+"T3+T2", D \\
+\vfill\columnbreak
+CSE Missed \\
+T1 = A + B \\
+T2 = A + B + C \\
+T3 = A + B \\
+C  = 2A + 2B + C \\
+
+D  = 2A + 2B + C \\
+(D = C)
+\end{multicols}
+
+\subsection{In Class Quiz 1 - Slide 34}
+\vspace{-1em}
+\begin{multicols}{2}
+Optimize the given code by performing CSE. \\
+Assume it is the complete code. How many \\
+computations in total can be eliminated? \textbf{1}
+\vspace{-1em}
+  \begin{multicols}{3}
+    \begin{enumerate}
+      \item b := a * a;
+      \item c := a * a;
+      \item d := b + c;
+      \item e := b + b;
+    \end{enumerate}
+\vfill\columnbreak
+ \ \\
+\begin{tikzpicture}
+\draw [-{Stealth[length=3mm, width=2mm]}] (0,0) -- (2,0);
+\end{tikzpicture}
+\vfill\columnbreak
+    \begin{enumerate}
+      \item b := a * a;
+      \item \textbf{c := b};
+      \item d := b + c;
+      \item e := b + b;
+    \end{enumerate}
+  \end{multicols}
+\end{multicols}
+
+
+\vspace{-2em}
+\subsection{In Class Quiz 2 - Slide 35}
+\vspace{-1em}
+\begin{multicols}{2}
+Optimize the given code by performing CSE. \\
+Assume it is the complete code. How many \\
+expressions are available after executing line 4? \textbf{3} \\
+Live expressions: \textbf{a * a, b + c, b + b}
+\vspace{-1em}
+  \begin{multicols}{3}
+    \begin{enumerate}
+      \item b := a * a;
+      \item c := a * a;
+      \item d := b + c;
+      \item e := b + b;
+    \end{enumerate}
+\vfill\columnbreak
+ \ \\
+\begin{tikzpicture}
+\draw [-{Stealth[length=3mm, width=2mm]}] (0,0) -- (2,0);
+\end{tikzpicture}
+\vfill\columnbreak
+    \begin{enumerate}
+      \item b := \textbf{a * a};
+      \item c := b;
+      \item d := \textbf{b + c};
+      \item e := \textbf{b + b};
+    \end{enumerate}
+  \end{multicols}
+\end{multicols}
+
+
+\chapter{Register Allocation}
+\section{Top Down Allocation - Slide 7}
+\vspace{-1em}
+\begin{multicols}{2}
+  \begin{enumerate}
+    \item A = 7
+    \item B = A + 2
+    \item C = A + B
+    \item D = C + B
+    \item B = C + B
+    \item A = A + B
+    \item E = C + D
+    \item F = C + D
+    \item G = A + B
+    \item H = E + F
+  \end{enumerate}
+  A = 4	- Used the most \\
+  B = 5	- Used the most \\
+  C = 4	- Used the most \\
+  D = 2 \\
+  E = 1 \\
+  F = 1 \\
+  G = 0 \\
+  $\leftarrow$ after this line C is no longer used\\
+\end{multicols}
+\vspace{-1em}
+3 Registers $\rightarrow$ Use them to keep A, B, C. Need at least 1 more register, 2 more for register spilling \\
+R1, R2, R3, R4 $\leftarrow$ could be used for register spilling \\
+B, \hspace{.75em}A, \hspace{.5em}C
+
+
+
+\section{Liveness}
+\vspace{-1em}
+\begin{multicols}{2}
+\subsection{Example 1 - Slides 9-10}
+\begin{tabular}{c|l|c|l|>{\bfseries}l}
+  \textbf{No.} &  & \textbf{Defined} & \textbf{Used} & \textbf{Live} \\
+  \hline
+   1  & A = B + C   & A  & B, C  & \{A, B\}        \\
+   2  & C = A + B   & C  & A, B  & \{A, B, C\}     \\
+   3  & T1 = B + C  & T1 & B, C  & \{A, B, C, T1\} \\
+   4  & T2 = T1 + C & T2 & T1, C & \{A, B, C, T2\} \\
+   5  & D = T2      & D  & T2    & \{A, B, C, D\}  \\
+   6  & E = A + B   & E  & A, B  & \{C, D, E\}     \\
+   7  & B = E + D   & B  & E, D  & \{B, C, D\}     \\
+   8  & A = C + D   & A  & C, D  & \{A, B\}        \\
+   9  & T3 = A + B  & T3 & A, B  & \{T3\}          \\
+  10  & WRITE(T3)   & -- & T3    & \{\}            \\
+\end{tabular}
+\vfill\columnbreak
+\setlength{\leftskip}{3em}
+\subsection{Example 2 - Slides 11-12}
+\begin{tabular}{c|l|c|l|>{\bfseries}l}
+  \textbf{No.} &  & \textbf{Defined} & \textbf{Used} & \textbf{Live} \\
+  \hline
+   1  & a := 0            & a  & a    & \{a, c\} \\
+   2  & b := a + 1        & b  & b    & \{b, c\} \\
+   3  & c := c + b        & c  & c, b & \{b, c\} \\
+   4  & a := b * 2        & a  & b    & \{a, c\} \\
+   5  & if a < 10 goto L1 & -- & a    & \{c\}    \\
+   6  & return c          & -- & c    & \{\}     \\
+\end{tabular}
+\end{multicols}
+
+
+\vspace{-1em}
+\subsection{In Class Quiz 1 - Slide 14}
+\vspace{-1em}
+\begin{multicols}{2}
+Perform Liveness analysis on the given code. There should
+be 8 live sets (one each after executing the 8 lines of code). \\
+How many live sets contain exactly 3 variables? \textbf{3}
+\vfill\columnbreak
+\begin{tabular}{c|l|c|l|>{\bfseries}l}
+  \textbf{No.} &  & \textbf{Defined} & \textbf{Used} & \textbf{Live} \\
+  \hline
+   1  & v := 0            & v  & --      & \{v\}       \\
+   2  & z := v + 1        & z  & v       & \{v, z\}    \\
+   3  & x := z * v        & x  & z, v    & \{x, z\}    \\
+   4  & y := x * 2        & y  & x       & \{x, y, z\} \\
+   5  & w := x + z * y    & w  & x, z, y & \{w, y, z\} \\
+   6  & u := z + 2        & u  & z       & \{u, w, y\} \\
+   7  & v := u + w + y    & v  & u, w, y & \{u, v\}    \\
+   8  & return v * u      & -- & u, v    & \{\}        \\
+\end{tabular}
+\end{multicols}
+
+
+\section{Global Register Allocation (with graph coloring)}
+3 - colorable graph - 3 registers needed \\
+Edges are live, each pair of variables live together will be connected in graph. \\
+Colors represent the number of available registers \\
 
 
 \renewcommand\thechapter{E2}
