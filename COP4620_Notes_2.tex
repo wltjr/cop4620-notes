@@ -2,17 +2,18 @@
     \title{\vspace{-50pt}\textbf{\underline{COP4620 Notes - Post-MidTerm}}}
     \author{William L. Thomson Jr.}
     \date{Spring Semester 2022}
+    \usepackage[T1]{fontenc}
     \usepackage{algorithm}
     \usepackage{algpseudocode}
     \usepackage{amsmath}
     \usepackage[dvipsnames]{xcolor}
     \usepackage{enumitem}
     \usepackage{helvet}
-%    \usepackage{hyperref}
+    \usepackage{hyperref}
     \usepackage{makecell}
     \usepackage{multicol}
+    \usepackage{pifont}
     \usepackage{soul}
-    \usepackage[T1]{fontenc}
     \usepackage{tikz}
     \usepackage[tmargin=1in,lmargin=1in,rmargin=1in]{geometry}
     \usepackage{titlesec}
@@ -21,9 +22,11 @@
 
     \algdef{SE}{Begin}{End}{\textbf{begin}}{\textbf{end}}
 
-%    \hypersetup{ colorlinks=true, linkcolor=blue, filecolor=purple, urlcolor=cyan }
+    \hypersetup{ colorlinks=true, linkcolor=blue, filecolor=purple, urlcolor=cyan }
 
     \newcommand{\comment}[1]{}
+    \newcommand{\cmark}{\ding{51}}%
+    \newcommand{\xmark}{\ding{55}}%
     \newcommand{\textb}[1]{\textcolor{blue}{#1}}
     \newcommand{\textg}[1]{\textcolor{green}{#1}}
     \newcommand{\textp}[1]{\textcolor{purple}{#1}}
@@ -1054,6 +1057,323 @@ Is the graph 2-colorable? \textbf{no}
 \vspace{-3em}
 
 
+
+\chapter{Instruction Scheduling}
+\subsection{In Class Quiz 1 - Slide 15}
+Draw the DDG for the given code. How many
+nodes and edges are there? ADD takes 1 cycle. \\
+  \begin{tikzpicture}[->, >=stealth', node distance=4cm]
+    \node[state, ellipse] (1) {a = b + c};
+    \node[state, ellipse, right of=1] (2) {d = a + 3};
+    \node[state, ellipse, right of=2] (3) {e = f + d};
+    \draw[very thick]
+      (1) edge[left, below] node{1} (2)
+      (2) edge[left, below] node{1} (3)
+      ;
+  \end{tikzpicture}
+  \indent \textbf{3 nodes, 2 edges}
+
+\vspace{-1em}
+\section{Reservation Tables - Example - Slide 17}
+\vspace{-1em}
+\begin{multicols}{2}
+  \begin{itemize}
+    \item Two ALUs,fully pipelined
+    \item One LD/ST unit, not pipelined
+    \item ADDs can execute on ALU0 or ALU1 (1 cycle)
+    \item MULs can execute on ALU0 only (2 cycles)
+    \item LOADs and STOREs both occupy the LD/ST unit
+          (LOAD 2 cycles, STORE1 cycle)
+  \end{itemize}
+\end{multicols}
+\vspace{-2em}
+\begin{multicols}{3}
+ADD(1) \\
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  Cycle & ALUO & ALU1 & LD/ST \\
+  \hline
+  0 & X    &      &       \\
+  \hline
+\end{tabular} \\ \ \\
+MUL \\
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  Cycle & ALUO & ALU1 & LD/ST \\
+  \hline
+  0     & X    &      &       \\
+  \hline
+  1     &      &      &       \\
+  \hline
+\end{tabular}
+  \vfill\columnbreak
+ADD(2) \\
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  Cycle & ALUO & ALU1 & LD/ST \\
+  \hline
+  0     &      & X    &       \\
+  \hline
+\end{tabular} \\ \ \\
+LOAD \\
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  Cycle & ALUO & ALU1 & LD/ST \\
+  \hline
+  0    &       &      & X     \\
+  \hline 
+  1    &       &      & X     \\
+  \hline
+\end{tabular}
+  \vfill\columnbreak
+STORE \\
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  Cycle & ALUO & ALU1 & LD/ST \\
+  \hline
+  0     &      &      & X     \\
+  \hline
+\end{tabular}
+\end{multicols}
+
+
+\subsection{In Class Quiz 2 - Slide 20-21}
+There are two fully pipelined ALU resources: ALU0 and ALU1. There are 2 instructions ADD and MUL. Resource constraints are given below. Which of the sequence of instructions is invalid?
+\vspace{-1em}
+\begin{multicols}{2}
+  \begin{description}
+    \item [\cmark] ADD | ADD
+    \item [\cmark] ADD | MUL
+    \item [\xmark] \textbf{MUL | MUL}
+    \item [\cmark] ADD ; ADD
+    \item [\cmark] ADD | MUL ; MUL
+  \end{description}
+  \setlength{\leftskip}{-8em}
+  Constraints:
+  \begin{itemize}
+  \setlength{\leftskip}{-8em}
+    \item ADD (1 cycle) can be executed on ALU0 or ALU1
+    \item MUL (1 cycle) can only be executed on ALU1
+  \end{itemize}
+  "|": simultaneously, ";" after
+\end{multicols}
+\vspace{-2em}
+\begin{multicols}{3}
+ADD \\
+\begin{tabular}{|c|c|c|}
+  \hline
+  ALUO & ALU1 & LD/ST \\
+  \hline
+  X    &      &       \\
+  \hline
+\end{tabular}
+  \vfill\columnbreak
+ADD \\
+\begin{tabular}{|c|c|c|}
+  \hline
+  ALUO & ALU1 & LD/ST \\
+  \hline
+       & X    &       \\
+  \hline
+\end{tabular}
+  \vfill\columnbreak
+STORE \\
+\begin{tabular}{|c|c|c|}
+  \hline
+  ALUO & ALU1 & LD/ST \\
+  \hline
+       &      & X     \\
+  \hline
+\end{tabular}
+\end{multicols}
+
+
+\subsection{In Class Quiz 3 - Slide 22-23}
+There are two (non-pipelined) resources: ALU and LD/ST. There are
+3 instructions ADD, SUB and LD. Resource constraints are given below.
+Which of the sequence of instructions is valid?
+\vspace{-1em}
+\begin{multicols}{2}
+  \begin{description}
+    \item [\xmark] ADD | SUB
+    \item [\xmark] ADD | ADD
+    \item [\xmark] SUB | LD
+    \item [\cmark] \textbf{LD ; ADD}
+  \end{description}
+  \vfill\columnbreak
+  \setlength{\leftskip}{-8em}
+  Constraints:
+  \begin{itemize}
+    \setlength{\leftskip}{-8em}
+    \item ADD instructions have a latency of 1 cycle
+    \item SUB instructions have a latency of 2 cycles
+    \item LD uses the ALU in its 1st cycle and then the
+    \item LD/ST resource for its 2nd cycle
+  \end{itemize}
+  "|": simultaneously, ";" after
+\end{multicols}
+\vspace{-2em}
+\begin{multicols}{3}
+ADD \\
+\begin{tabular}{|c|c|c|}
+  \hline
+  Cycle & ALU0 & LD/ST \\
+  \hline
+  0     & X    &       \\
+  \hline
+\end{tabular}
+  \vfill\columnbreak
+SUB \\
+\begin{tabular}{|c|c|c|}
+  \hline
+  Cycle & ALU0 & LD/ST \\
+  \hline
+   0    & X    &       \\
+  \hline
+   1    & X    &       \\
+  \hline
+\end{tabular}
+  \vfill\columnbreak
+STORE \\
+\begin{tabular}{|c|c|c|}
+  \hline
+  Cycle & ALU0 & LD/ST \\
+  \hline
+   0    & X    &       \\
+  \hline
+   1    &      & X     \\
+  \hline
+\end{tabular}
+\end{multicols}
+
+\newpage
+\section{Data dependence graph - Example Slide - 13}
+\vspace{-1em}
+\begin{multicols}{2}
+  \begin{itemize}
+    \item ADD takes 1 cycle
+    \item MUL takes 2 cycles
+    \item LD takes 2 cycles
+    \item ST takes 1 cycle
+  \end{itemize} \
+  \begin{enumerate}
+    \item LD A,R1
+    \item LD B,R2
+    \item R3 = R1 + R2
+    \item LD C,R4
+    \item R5 = R4 * R2
+    \item R6 = R3 + R5
+    \item ST R6,D
+  \end{enumerate}
+  \subsection{In Class Quiz 4 - Slide 38}
+  Order:\hspace{1.1em}\textbf{2,4,1,5,3,6,7} \\
+  Heights: \textbf{6,6,5,4,3,2,1} \\ \ \\
+  \vfill\columnbreak
+  \setlength{\leftskip}{-8em}
+  \begin{tikzpicture}[->, >=stealth', node distance=2cm]
+    \node[state, ellipse] (7) {\textr{7} ST R6,D};
+    \node[state, ellipse, above of=7] (6) {\textr{6} R6 = R3 + R5};
+    \node[state, ellipse, above of=6, left of=6] (3) {\textr{3} R3 = R1 + R2};
+    \node[state, ellipse, above of=6, right of=6] (5) {\textr{5} R5 = R4 * R2};
+    \node[state, ellipse, above of=5, right of=5] (4) {\textr{4} LD C, R4};
+    \node[state, ellipse, above of=5, left of=5] (2) {\textr{2} LD B, R2};
+    \node[state, ellipse, above of=3, left of=3] (1) {\textr{1} LD A, Ra};
+    \draw[very thick]
+      (1) edge[left, left] node{2} (3)
+      (2) edge[left, right] node{2} (3)
+      (2) edge[left, left] node{2} (5)
+      (3) edge[left, left] node{1} (6)
+      (4) edge[left, right] node{2} (5)
+      (5) edge[left, right] node{2} (6)
+      (6) edge[left, left] node{1} (7);
+    \node [annotation, left] at (1.west) {\tikz{\node[gray box=1] {5};}};
+    \node [annotation, left] at (2.west) {\tikz{\node[gray box=1] {6};}};
+    \node [annotation, left] at (3.west) {\tikz{\node[gray box=1] {3};}};
+    \node [annotation, left] at (4.west) {\tikz{\node[gray box=1] {6};}};
+    \node [annotation, right] at (5.east) {\tikz{\node[gray box=1] {4};}};
+    \node [annotation, left] at (6.west) {\tikz{\node[gray box=1] {2};}};
+    \node [annotation, left] at (7.west) {\tikz{\node[gray box=1] {1};}};
+  \end{tikzpicture} 
+\end{multicols}
+
+\vspace{-3em}
+\subsection{Reservation tables}
+\vspace{-1em}
+\begin{multicols}{3}
+ADD(1) \\
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  Cycle & ALUO & ALU1 & LD/ST \\
+  \hline
+  0 & X    &      &       \\
+  \hline
+\end{tabular} \\ \ \\
+MUL \\
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  Cycle & ALUO & ALU1 & LD/ST \\
+  \hline
+  0     & X    &      &       \\
+  \hline
+  1     &      &      &       \\
+  \hline
+\end{tabular}
+  \vfill\columnbreak
+ADD(2) \\
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  Cycle & ALUO & ALU1 & LD/ST \\
+  \hline
+  0     &      & X    &       \\
+  \hline
+\end{tabular} \\ \ \\
+LOAD \\
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  Cycle & ALUO & ALU1 & LD/ST \\
+  \hline
+  0    &       &      & X     \\
+  \hline 
+  1    &       &      & X     \\
+  \hline
+\end{tabular}
+  \vfill\columnbreak
+STORE \\
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  Cycle & ALUO & ALU1 & LD/ST \\
+  \hline
+  0     &      &      & X     \\
+  \hline
+\end{tabular}
+\end{multicols}
+
+\section{Height-based List Scheduling}
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  Cycle & ALUO & ALU1 & LD/ST \\
+  \hline
+  0     &      &      & 2     \\
+  \hline
+  1     &      &      & 2     \\
+  \hline
+  2     &      &      & 4     \\
+  \hline
+  3     &      &      & 4     \\
+  \hline
+  4     & 5    &      & 1     \\
+  \hline
+  5     &      &      & 1     \\
+  \hline
+  6     & 3    &      &       \\
+  \hline
+  7     & 6    &      &       \\
+  \hline
+  8     &      &      & 7     \\
+  \hline
+\end{tabular}
+
+
 \renewcommand\thechapter{E2}
 \chapter{Final Exam - Practice Questions}
 \section{Q1}
@@ -1231,7 +1551,7 @@ instructions.
   \vfill\columnbreak
   \begin{tabular}{|c|>{\bfseries}c|>{\bfseries}c|>{\bfseries}l|>{\bfseries}l|}
     \hline
-  	& ALU0   & ALU1 & LD/DT \\
+  	& ALU0   & ALU1 & LD/ST \\
     \hline
     ADD(1)   & X &   &  \\
     \hline
@@ -1240,7 +1560,7 @@ instructions.
     MUL(1)   & X &   &  \\
              &   &   &  \\
     \hline
-    MUL(2)   &   &   &  \\
+    MUL(2)   &   & X &  \\
              &   &   &  \\
     \hline
     LD(1)    & X &   &   \\
@@ -1276,7 +1596,7 @@ Draw the data dependence graph for the following piece of code. Don't forget to 
 6 can be 7 or 8, max(7,8) = 8 \\
   \begin{tabular}{|c|>{\bfseries}c|>{\bfseries}c|>{\bfseries}l|>{\bfseries}l|}
     \hline
-  	Cycle & ALU0   & ALU1 & LD/DT \\
+  	Cycle & ALU0   & ALU1 & LD/ST \\
     \hline
      0 &  1 &   &    \\
     \hline
