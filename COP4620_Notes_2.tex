@@ -1063,9 +1063,9 @@ Is the graph 2-colorable? \textbf{no}
 Draw the DDG for the given code. How many
 nodes and edges are there? ADD takes 1 cycle. \\
   \begin{tikzpicture}[->, >=stealth', node distance=4cm]
-    \node[state, ellipse] (1) {a = b + c};
-    \node[state, ellipse, right of=1] (2) {d = a + 3};
-    \node[state, ellipse, right of=2] (3) {e = f + d};
+    \node[state, rectangle] (1) {a = b + c};
+    \node[state, rectangle, right of=1] (2) {d = a + 3};
+    \node[state, rectangle, right of=2] (3) {e = f + d};
     \draw[very thick]
       (1) edge[left, below] node{1} (2)
       (2) edge[left, below] node{1} (3)
@@ -1103,7 +1103,7 @@ MUL \\
   \hline
   0     & X    &      &       \\
   \hline
-  1     &      &      &       \\
+  1     & X    &      &       \\
   \hline
 \end{tabular}
   \vfill\columnbreak
@@ -1177,7 +1177,7 @@ ADD \\
   \hline
 \end{tabular}
   \vfill\columnbreak
-STORE \\
+MUL \\
 \begin{tabular}{|c|c|c|}
   \hline
   ALUO & ALU1 & LD/ST \\
@@ -1234,7 +1234,7 @@ SUB \\
   \hline
 \end{tabular}
   \vfill\columnbreak
-STORE \\
+LD \\
 \begin{tabular}{|c|c|c|}
   \hline
   Cycle & ALU0 & LD/ST \\
@@ -1265,19 +1265,21 @@ STORE \\
     \item R6 = R3 + R5
     \item ST R6,D
   \end{enumerate}
+
   \subsection{In Class Quiz 4 - Slide 38}
   Order:\hspace{1.1em}\textbf{2,4,1,5,3,6,7} \\
-  Heights: \textbf{6,6,5,4,3,2,1} \\ \ \\
+  Heights: \textbf{6,6,5,4,3,2,1} \\
+  Cycles: \textbf{8} \\
   \vfill\columnbreak
   \setlength{\leftskip}{-8em}
   \begin{tikzpicture}[->, >=stealth', node distance=2cm]
-    \node[state, ellipse] (7) {\textr{7} ST R6,D};
-    \node[state, ellipse, above of=7] (6) {\textr{6} R6 = R3 + R5};
-    \node[state, ellipse, above of=6, left of=6] (3) {\textr{3} R3 = R1 + R2};
-    \node[state, ellipse, above of=6, right of=6] (5) {\textr{5} R5 = R4 * R2};
-    \node[state, ellipse, above of=5, right of=5] (4) {\textr{4} LD C, R4};
-    \node[state, ellipse, above of=5, left of=5] (2) {\textr{2} LD B, R2};
-    \node[state, ellipse, above of=3, left of=3] (1) {\textr{1} LD A, Ra};
+    \node[state, rectangle] (7) {\textr{7} ST R6,D};
+    \node[state, rectangle, above of=7] (6) {\textr{6} R6 = R3 + R5};
+    \node[state, rectangle, above of=6, left of=6] (3) {\textr{3} R3 = R1 + R2};
+    \node[state, rectangle, above of=6, right of=6] (5) {\textr{5} R5 = R4 * R2};
+    \node[state, rectangle, above of=5, right of=5] (4) {\textr{4} LD C, R4};
+    \node[state, rectangle, above of=5, left of=5] (2) {\textr{2} LD B, R2};
+    \node[state, rectangle, above of=3, left of=3] (1) {\textr{1} LD A, R1};
     \draw[very thick]
       (1) edge[left, left] node{2} (3)
       (2) edge[left, right] node{2} (3)
@@ -1297,7 +1299,7 @@ STORE \\
 \end{multicols}
 
 \vspace{-3em}
-\subsection{Reservation tables}
+\section{Height-based List Scheduling}
 \vspace{-1em}
 \begin{multicols}{3}
 ADD(1) \\
@@ -1316,6 +1318,14 @@ MUL \\
   0     & X    &      &       \\
   \hline
   1     &      &      &       \\
+  \hline
+\end{tabular} \\ \ \\
+STORE \\
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  Cycle & ALUO & ALU1 & LD/ST \\
+  \hline
+  0     &      &      & X     \\
   \hline
 \end{tabular}
   \vfill\columnbreak
@@ -1338,17 +1348,7 @@ LOAD \\
   \hline
 \end{tabular}
   \vfill\columnbreak
-STORE \\
-\begin{tabular}{|c|c|c|c|}
-  \hline
-  Cycle & ALUO & ALU1 & LD/ST \\
-  \hline
-  0     &      &      & X     \\
-  \hline
-\end{tabular}
-\end{multicols}
-
-\section{Height-based List Scheduling}
+  \ \\
 \begin{tabular}{|c|c|c|c|}
   \hline
   Cycle & ALUO & ALU1 & LD/ST \\
@@ -1372,6 +1372,198 @@ STORE \\
   8     &      &      & 7     \\
   \hline
 \end{tabular}
+\end{multicols}
+
+
+\subsection{In Class Quiz 5 - Slide 32}
+Assume a machine that has 2 ALUs, 1 MU and 1 L/S unit. Details of available instructions are given below. What is the total \# of reservation tables? \textbf{9}
+\begin{itemize}
+ \item The ALUs can execute ADDs with a single-
+cycle latency and SUBs with a two-cycle
+latency.
+ \item The MU can execute MULs with a 2 cycle
+latency and DIVs with a three-cycle latency.
+ \item LDs take two cycles, and occupy either ALU
+in the first cycle and the L/S unit in the
+second.
+ \item STs occupy the L/S unit for one cycle.
+\end{itemize}
+
+\vspace{-1em}
+\begin{multicols}{3}
+ADD(1) \\
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  ALUO & ALU1 & MU & LD/ST \\
+  \hline
+  X    &      &    &       \\
+  \hline
+\end{tabular} \\ \ \\
+SUB(1) \\
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  ALUO & ALU1 & MU & LD/ST \\
+  \hline
+  X     &     &    &       \\
+  \hline
+  X     &     &    &       \\
+  \hline
+\end{tabular} \\ \ \\
+LOAD(1) \\
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  ALUO & ALU1 & MU & LD/ST \\
+  \hline
+  X     &     &    &      \\
+  \hline 
+        &     &    & X    \\
+  \hline
+\end{tabular}
+  \vfill\columnbreak
+ADD(2) \\
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  ALUO & ALU1 & MU & LD/ST \\
+  \hline
+       & X    &    &       \\
+  \hline
+\end{tabular} \\ \ \\
+SUB(2) \\
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  ALUO & ALU1 & MU & LD/ST \\
+  \hline
+       & X    &    &       \\
+  \hline 
+       & X    &    &       \\
+  \hline
+\end{tabular} \\ \ \\
+LOAD(2) \\
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  ALUO & ALU1 & MU & LD/ST \\
+  \hline
+       & X    &    &      \\
+  \hline 
+        &     &    & X    \\
+  \hline
+\end{tabular}
+  \vfill\columnbreak
+MUL \\
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  ALUO & ALU1 & MU & LD/ST \\
+  \hline
+       &      & X  &       \\
+  \hline
+       &      & X  &       \\
+  \hline
+\end{tabular} \\ \ \\
+DIV \\
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  ALUO & ALU1 & MU & LD/ST \\
+  \hline
+       &      & X  &       \\
+  \hline
+       &      & X  &       \\
+  \hline
+       &      & X  &       \\
+  \hline
+\end{tabular} \\ \ \\
+STORE \\
+\begin{tabular}{|c|c|c|c|}
+  \hline
+  ALUO & ALU1 & MU & LD/ST \\
+  \hline
+       &      &    & X     \\
+  \hline
+\end{tabular}
+\end{multicols}
+
+
+\newpage
+\subsection{In Class Quiz 6 - Slide 34}
+Draw the data-dependence graph for the following piece of code, including latencies. Show the heights of each node in the graph. Use the ISA from the previous question. Which instruction has height = 6? \textbf{5}
+\begin{multicols}{2}
+\begin{enumerate}
+  \item LD A, R1;
+  \item LD B, R2;
+  \item LD C, R3;
+  \item R4 = R2 * R1;
+  \item R5 = R1 + 7;
+  \item R6 = R5 - R3;
+  \item R7 = R1 / R4;
+  \item R8 = R6 + R4;
+  \item R9 = R7 + R8;
+  \item ST R9, D;
+\end{enumerate} \ \\
+Order : \textbf{1,2,3,5,4,6,7,8,9,10} \\ 
+Cycles: \textbf{10} \\ \ \\ \ \\
+
+\begin{tabular}{|c|c|c|c|c|}
+  \hline
+    & ALUO & ALU1 & MU  & LD/ST \\
+  \hline
+  0 & 1    &      &     &    \\
+  \hline
+  1 & 2    &      &     & 1  \\
+  \hline
+  2 & 3    & 5    &     & 2  \\
+  \hline
+  3 &      &      & 4   & 3  \\
+  \hline
+  4 & 6    &      & 4   &    \\
+  \hline
+  5 & 8    &      & 7   &    \\
+  \hline
+  6 &      &      & 7   &    \\
+  \hline
+  7 &      &      & 7   &    \\
+  \hline
+  8 & 9    &      &     &    \\
+  \hline
+  9 &      &      &     & 10 \\
+  \hline
+\end{tabular}
+  \vfill\columnbreak
+  \setlength{\leftskip}{-13em}
+  \begin{tikzpicture}[->, >=stealth', node distance=2.5cm]
+    \node[state, rectangle] (10) {\textr{10} ST R9, D};
+    \node[state, rectangle, above of=10, right of=10] (9) {\textr{9} R9 = R7 + R8};
+    \node[state, rectangle, above of=10, left of=10] (8) {\textr{8} R8 = R6 + R4};
+    \node[state, rectangle, above of=9, right of=9] (7) {\textr{7} R7 = R1 / R4};
+    \node[state, rectangle, above of=9, left of=9] (6) {\textr{6} R6 = R5 - R3};
+    \node[state, rectangle, above of=8, left of=8] (5) {\textr{5} R5 = R1 + 7};
+    \node[state, rectangle, above of=5, right of=5] (4) {\textr{4} R4 = R2 * R1};
+    \node[state, rectangle, above of=4, right of=4] (2) {\textr{2} LD B, R2};
+    \node[state, rectangle, right of=2, xshift=2.5cm] (3) {\textr{3} LD C, R3};
+    \node[state, rectangle, above of=4, left of=4] (1) {\textr{1} LD A, R1};
+    \draw[very thick]
+      (1) edge[left, left] node{2} (4)
+      (1) edge[left, left] node{2} (5)
+      (2) edge[left, left] node{2} (4)
+      (3) edge[left, left] node{2} (6)
+      (4) edge[left, above] node{2} (7)
+      (4) edge[left, left] node{2} (8)
+      (5) edge[left, left, bend left=30] node{1} (6)
+      (6) edge[left, left] node{2} (8)
+      (7) edge[left, above] node{3} (9)
+      (8) edge[left, above] node{1} (9)
+      (9) edge[left, left] node{1} (10);
+    \node [annotation, left] at (1.west) {\tikz{\node[gray box=1] {9};}};
+    \node [annotation, left] at (2.west) {\tikz{\node[gray box=1] {9};}};
+    \node [annotation, left] at (3.west) {\tikz{\node[gray box=1] {7};}};
+    \node [annotation, right] at (4.east) {\tikz{\node[gray box=1] {7};}};
+    \node [annotation, left] at (5.west) {\tikz{\node[gray box=1] {6};}};
+    \node [annotation, left] at (6.west) {\tikz{\node[gray box=1] {5};}};
+    \node [annotation, left] at (7.west) {\tikz{\node[gray box=1] {5};}};
+    \node [annotation, left] at (8.west) {\tikz{\node[gray box=1] {3};}};
+    \node [annotation, right] at (9.east) {\tikz{\node[gray box=1] {2};}};
+    \node [annotation, left] at (10.west) {\tikz{\node[gray box=1] {1};}};
+  \end{tikzpicture} 
+\end{multicols}
+
 
 
 \renewcommand\thechapter{E2}
@@ -1522,16 +1714,16 @@ no aliasing)
     \hline
   	& Code & Def & Use & Live \\
     \hline
-     1: & A = 7       & A  & --   & {A,C}    \\
-     2: & B = 8       & B  & --   & {A,B,C}  \\
-     3: & T1 = A + B  & T1 & A,B  & {A,B,C,T1} \\
-     4: & T2 = T1 + C & T2 & T1,C & {A,B,T2} \\
-     5: & C = A + B   & C  & A,B  & {B,C,T2} \\
-     6: & T3 = T2 + C & T3 & T2,C & {B,C,T3} \\
-     7: & A = C + T3  & A  & C,T3 & {A,B}    \\
-     8: & T4 = A + B  & T4 & A,B  & {A,T4}   \\
-     9: & B = A + T4  & B  & A,T4 & {B}      \\
-    10: & WRITE(B)    & -- & B    & {}       \\
+     1: & A = 7       & A  & --   & \{A,C\}    \\
+     2: & B = 8       & B  & --   & \{A,B,C\}  \\
+     3: & T1 = A + B  & T1 & A,B  & \{A,B,C,T1\} \\
+     4: & T2 = T1 + C & T2 & T1,C & \{A,B,T2\} \\
+     5: & C = A + B   & C  & A,B  & \{B,C,T2\} \\
+     6: & T3 = T2 + C & T3 & T2,C & \{B,C,T3\} \\
+     7: & A = C + T3  & A  & C,T3 & \{A,B\}    \\
+     8: & T4 = A + B  & T4 & A,B  & \{A,T4\}   \\
+     9: & B = A + T4  & B  & A,T4 & \{B\}      \\
+    10: & WRITE(B)    & -- & B    & \{\}       \\
     \hline
   \end{tabular}
 \end{multicols}
@@ -1558,14 +1750,18 @@ instructions.
     ADD(2)   &   & X &  \\
     \hline
     MUL(1)   & X &   &  \\
-             &   &   &  \\
+             & X &   &  \\
     \hline
     MUL(2)   &   & X &  \\
-             &   &   &  \\
+             &   & X &  \\
     \hline
     LD(1)    & X &   &   \\
              &   &   & X \\
-             &   &   &  \\
+             &   &   & X \\
+    \hline
+    LD(2)    &   & X &   \\
+             &   &   & X \\
+             &   &   & X \\
     \hline
     STORE(1) & X &   &   \\
              &   &   & X \\
